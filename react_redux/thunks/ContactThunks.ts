@@ -56,7 +56,6 @@ export const postContact = createAsyncThunk<
         data,
         { headers: { 'Content-Type': 'application/json' } }
       )
-      console.log("data",data);
       
       if(response.status === 201){
         toast.success('Thanks for getting in touch!')

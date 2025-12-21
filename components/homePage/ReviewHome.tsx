@@ -119,7 +119,7 @@ useEffect(()=>{
 
                   <div className="ml-3 text-left">
                     <div className="text-sm font-medium text-gray-900">{t.user?.username}</div>
-                    <div className="text-xs text-gray-500 uppercase">{t.user.role}</div>
+                    <div className="text-xs text-gray-500">{t.user.email}</div>
                   </div>
                 </figcaption>
               </motion.figure>

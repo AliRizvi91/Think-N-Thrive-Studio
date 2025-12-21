@@ -69,7 +69,6 @@ const handleSubmit = async () => {
       form.append("image", newImage);
     }
 
-    console.log('newImage',newImage);
     
     await dispatch(updateUserThunk({ id: userId, data: form }));
     toast.success("User updated successfully");
@@ -130,7 +129,6 @@ const handleSubmit = async () => {
       <ImageUploader
         defaultImage={formData.image}
         onImageSelect={(file) => {
-  console.log("SELECTED FILE:", file);
           setNewImage(file);
           setPreviewImage(URL.createObjectURL(file));
         }}
