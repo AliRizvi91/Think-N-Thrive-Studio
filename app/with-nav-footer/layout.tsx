@@ -1,44 +1,23 @@
-// app/[lang]/(with-nav-footer)/layout.tsx
-import Footer from "@/components/main/Footer";
+"use client"; // MUST for hooks
+
 import Navbar from "@/components/main/Navbar";
-import type { Metadata } from "next";
+import Footer from "@/components/main/Footer";
+import MainLoading from "@/components/pocket/MainLoading";
+import { useAppSelector } from "@/components/reduxComponents/ReduxHook";
+import { AnimatePresence } from "framer-motion";
 
 interface WithNavFooterLayoutProps {
   children: React.ReactNode;
 }
 
-// ✅ Optional: default metadata for all pages using this layout
-export const metadata: Metadata = {
-  title: {
-    default: "Raza Tech Solution",
-    template: "%s | Raza Tech Solution",
-  },
-  description:
-    "Explore Raza Tech Solution — personal portfolio showcasing web design and development expertise.",
-  openGraph: {
-    title: "Raza Tech Solution",
-    description:
-      "Explore Raza Tech Solution — personal portfolio showcasing web design and development expertise.",
-    images: ["/opengraph-image.jpg"],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Raza Tech Solution",
-    description:
-      "Explore Raza Tech Solution — personal portfolio showcasing web design and development expertise.",
-    images: ["/opengraph-image.jpg"],
-  },
-};
-
-export default function WithNavFooterLayout({
-  children,
-}: WithNavFooterLayoutProps) {
+  export default function WithNavFooterLayout({ children }: { children: React.ReactNode }) {
+  const { appLoaded } = useAppSelector((state) => state.StoreOfUser);
   return (
     <>
       <Navbar />
-      <main>{children}</main>
+      {children}
       <Footer />
     </>
   );
 }
+

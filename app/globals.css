@@ -1,26 +1,65 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Fonts classes */
+.Jost {
+  font-family: var(--font-Jost);
+}
+.Ballet {
+  font-family: var(--font-Ballet);
+}
+
+/* Utility classes */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --selection-bg: #ffff;
+  --selected: #000000c4;
+  --selection-text: #E8E4D9;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+
+/* Selection */
+::selection {
+  background-color: var(--selected);
+  color: var(--selection-text);
+}
+
+::-moz-selection {
+  background-color: var(--selected);
+  color: var(--selection-text);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f1210;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E8E4D9;
+  border-radius: 4px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94FBFF;
+  background-clip: content-box;
+}
+

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useEffect } from 'react';
 import { setCredentials, clearToken } from '@/react_redux/slices/UserSlice';
 import { useAppDispatch, useAppSelector } from '../reduxComponents/ReduxHook';
@@ -51,6 +51,13 @@ function AuthenticateUser({ children }: AuthenticateUserProps) {
       dispatch(getme());
     }
   }, [dispatch, token, user, loading]);
+  
+  useEffect(() => {
+  if (!loading) {
+    dispatch({ type: "user/authChecked", payload: true });
+  }
+}, [loading, dispatch]);
+
 
   return <>{children}</>;
 }

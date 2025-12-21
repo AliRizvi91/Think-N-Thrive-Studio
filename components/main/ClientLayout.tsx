@@ -1,74 +1,69 @@
-'use client'
+'use client';
 import '@/app/globals.css';
-import { Suspense, useState, useEffect, ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Toaster } from 'sonner';
 import ReduxProvider from '@/components/reduxComponents/ReduxProvider';
 import AuthenticateUser from './AuthenticateUser';
 import { OAuthGoogleProvider } from '../oAuth/OAuthGoogleProvider';
-import LoadingDevices from '../pocket/LoadingDevices';
 import SmoothScroll from '../pocket/SmoothScroll';
-import { AnimatePresence } from 'framer-motion';
-import MiniLoading from '../pocket/MiniLoading';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../reduxComponents/ReduxHook';
-import { showMiniLoading } from '@/react_redux/slices/UserSlice'; // ensure correct path
 import { usePathname } from 'next/navigation';
+import ColorfulSpinner from '../pocket/ColourfullSpinner';
 
 interface ClientLayoutHomeProps {
   children: ReactNode;
 }
 
 function InnerLayout({ children }: ClientLayoutHomeProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [animationCompleted, setAnimationCompleted] = useState(false);
-
-  const { MiniLoadingState, currentLang } = useAppSelector((state) => state.StoreOfUser);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
+  const { appLoaded, authChecked } = useAppSelector(
+    (state) => state.StoreOfUser
+  );
 
+  // Page change par appLoaded false
   useEffect(() => {
-    if (document.readyState === 'complete') {
-      setIsLoading(false);
-      return;
-    }
-
-    const handleLoad = () => setIsLoading(false);
-
-    window.addEventListener('load', handleLoad);
-
-    const loadTimeout = setTimeout(() => setIsLoading(false), 5000);
-
-    return () => {
-      window.removeEventListener('load', handleLoad);
-      clearTimeout(loadTimeout);
-    };
-  }, []);
-
-  const showContent = !isLoading && animationCompleted;
-
-  // <-- FALLBACK: hide mini loader on any pathname change (navigation complete)
-  useEffect(() => {
-    // If pathname changes, make sure the mini loader is off.
-    // This is a fallback in case some navigation path didn't dispatch(false).
-    if (pathname) {
-      dispatch(showMiniLoading(false));
-    }
+    dispatch({ type: "user/appLoaded", payload: false });
   }, [pathname, dispatch]);
 
-  return (
-    <>
-      {/* Page Loading Overlay */}
-      <AnimatePresence>
-        {MiniLoadingState && <MiniLoading />}
-      </AnimatePresence>
+  // Fonts + window load
+  useEffect(() => {
+    Promise.all([
+      new Promise((res) => {
+        if (document.readyState === "complete") res(true);
+        else window.addEventListener("load", () => res(true), { once: true });
+      }),
+      document.fonts.ready
+    ]).then(() => {
+      dispatch({ type: "user/appLoaded", payload: true });
+    });
+  }, [dispatch]);
 
-      <OAuthGoogleProvider>
-        <AuthenticateUser>
-          <SmoothScroll>
-            {!showContent ? (
-              <LoadingDevices onAnimationComplete={() => setAnimationCompleted(true)} />
-            ) : (
-              <div className="transition-opacity duration-200 opacity-100 z-10" aria-busy={false}>
-                <main className="flex-grow">{children}</main>
+  return (
+    <OAuthGoogleProvider>
+      <AuthenticateUser>
+        <AnimatePresence mode="wait">
+          {!appLoaded || !authChecked ? (
+            <motion.div
+              key="loading"
+              // initial={{ opacity: 0 }}
+              // animate={{ opacity: 1 }}
+              // exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="fixed top-0 left-0 w-full h-screen flex justify-center items-center bg-black z-[9999]"
+            >
+              <ColorfulSpinner />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <SmoothScroll>
+                <main className="grow">{children}</main>
                 <Toaster
                   position="bottom-left"
                   theme="dark"
@@ -86,16 +81,16 @@ function InnerLayout({ children }: ClientLayoutHomeProps) {
                     },
                   }}
                 />
-              </div>
-            )}
-          </SmoothScroll>
-        </AuthenticateUser>
-      </OAuthGoogleProvider>
-    </>
+              </SmoothScroll>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </AuthenticateUser>
+    </OAuthGoogleProvider>
   );
 }
 
-export default function ClientLayout({ children }: ClientLayoutHomeProps) {
+export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
     <ReduxProvider>
       <InnerLayout>{children}</InnerLayout>
