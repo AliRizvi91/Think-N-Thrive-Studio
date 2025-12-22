@@ -1,13 +1,33 @@
 'use client'
-import React from 'react'
+
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import ProfilePage from '@/components/Dashboard/profilePage'
+import { useAppSelector } from '@/components/reduxComponents/ReduxHook'
 
 function Page() {
-  return (
+  const { user } = useAppSelector((state) => state.StoreOfUser)
+  const router = useRouter()
+
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      router.push('/') // redirect to home
+    }
+  }, [user, router])
+
+  // jab tak user load ho raha ho
+  if (!user) return (
     <>
-    <ProfilePage/>
+    <div className="h-screen w-full flex justify-center items-center">
+      <h1 className='text-7xl font-black'>💀 SORRY… NOT FOR YOU 💀</h1>
+    </div>
     </>
   )
+
+  // sirf admin ko hi page dikhay
+  if (user.role !== 'admin') return null
+
+  return <ProfilePage />
 }
 
 export default Page
