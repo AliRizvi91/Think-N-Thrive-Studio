@@ -72,7 +72,7 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
-      appLoaded: (state, action) => {
+      appLoadedReducer: (state, action) => {
     state.appLoaded = action.payload;
   },
   authChecked: (state, action) => {
@@ -231,5 +231,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, setCredentials, verifiedEmail, appLoaded, authChecked, clearToken } = userSlice.actions;
+export const { logout, setCredentials, verifiedEmail, appLoadedReducer, authChecked, clearToken } = userSlice.actions;
 export default userSlice.reducer;

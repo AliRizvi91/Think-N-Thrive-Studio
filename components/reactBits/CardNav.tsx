@@ -198,26 +198,27 @@ const toggleMenu = () => {
         style={{ backgroundColor: baseColor }}
       >
         {/* TOP BAR */}
-        <div className="absolute inset-x-0 top-0 h-[60px] flex items-center justify-between px-4 z-10">
+       <div className="absolute inset-x-0 top-0 h-[60px] flex items-center justify-between px-4 z-10 select-none">
+
           {/* HAMBURGER */}
-          <div
+          <button
             onClick={toggleMenu}
             role="button"
             aria-label="Toggle Menu"
             className="cursor-pointer flex flex-col gap-[6px]"
             style={{ color: menuColor || '#000' }}
           >
-            <span
+            <div
               className={`w-[30px] h-[2px] bg-current transition ${
                 isHamburgerOpen ? 'rotate-45 translate-y-[4px]' : ''
               }`}
             />
-            <span
+            <div
               className={`w-[30px] h-[2px] bg-current transition ${
                 isHamburgerOpen ? '-rotate-45 -translate-y-[4px]' : ''
               }`}
             />
-          </div>
+          </button>
 
           {/* LOGO */}
           <h1 className='sm:text-[20px] text-[15px] font-black text-white text-center'>Think <span className='text-sky-400'>N</span> Thrive Studio</h1>
@@ -236,10 +237,10 @@ const toggleMenu = () => {
 
         {/* CONTENT */}
         <div
-          className={`card-nav-content absolute inset-x-0 top-[60px] h-full p-2 flex flex-col md:flex-row sm:gap-2 gap-1 ${
+          className={`card-nav-content absolute inset-x-0 top-[60px] p-2 flex flex-col md:flex-row sm:gap-2 gap-1 ${
             isExpanded
-              ? 'visible pointer-events-auto'
-              : 'invisible pointer-events-none'
+              ? 'visible pointer-events-auto h-fit'
+              : 'invisible pointer-events-none h-fit'
           }`}
         >
           {visibleItems.map((item, idx) => (
