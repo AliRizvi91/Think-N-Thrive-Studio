@@ -2,7 +2,6 @@
 import React from 'react';
 import { VscCopilotWarning } from "react-icons/vsc";
 import { motion } from 'framer-motion';
-import MainButton from '../pocket/MainButton';
 
 function NotFound() {
   return (
