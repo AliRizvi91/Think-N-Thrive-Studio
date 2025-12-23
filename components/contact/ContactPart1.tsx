@@ -49,7 +49,7 @@ function ContactPart1() {
             <div className="grid md:grid-cols-2 grid-cols-1 w-full h-full mb-40 md:gap-0 sm:gap-20 gap-5">
 
                 {/* Left Image */}
-                <div className="flex justify-center items-center">
+                <div className="flex justify-center items-center select-none">
                     <object
                         type="image/svg+xml"
                         data="/assets/images/Contact.svg"

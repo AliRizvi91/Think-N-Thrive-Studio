@@ -69,7 +69,7 @@ export default function SingleCourse({
     <div className="bg-white">
     <Container maxWidth="Exl" className="flex flex-col gap-8 relative sm:top-[15vh] top-[12vh]">
       {/* Course Image */}
-      <div className="relative w-full h-[70vh] rounded-4xl overflow-hidden border-2 border-black">
+      <div className="relative w-full h-[70vh] rounded-4xl overflow-hidden border-2 border-black select-none">
         <Image src={course.image} alt={course.category} fill className="object-cover" />
       </div>
 
@@ -104,7 +104,7 @@ export default function SingleCourse({
             <p className="italic">“{review.comment}”</p>
 
             <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden select-none">
                 <Image
                   src={
                     review.user?.image ||

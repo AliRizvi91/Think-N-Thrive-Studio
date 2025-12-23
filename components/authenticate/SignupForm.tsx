@@ -121,7 +121,7 @@ const SignupForm: React.FC<Props> = ({ onSwitch }) => {
           password: false
         });
 
-        window.location.href= '/with-nav-footer/home'
+        window.location.href= '/'
       }
     } catch (error: any) {
       console.error("Signup failed:", error);

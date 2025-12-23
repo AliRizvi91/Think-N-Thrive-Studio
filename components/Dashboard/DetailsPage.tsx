@@ -196,7 +196,7 @@ export default function DetailsPage() {
                                 <div className="space-y-2">
                                     {reviews.map((r) => (
                                         <div className="bg-black/30 rounded-lg p-4 flex gap-2" key={r._id}>
-                                            <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                                            <div className="relative w-10 h-10 rounded-full overflow-hidden select-none">
                                                 <Image
                                                     src={r.user?.image || 'https://res.cloudinary.com/dkbz23qyt/image/upload/v1759525517/Avatar_k3tkyn.png'}
                                                     alt="user"

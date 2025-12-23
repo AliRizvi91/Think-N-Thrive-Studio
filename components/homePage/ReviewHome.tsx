@@ -113,7 +113,7 @@ useEffect(()=>{
                 </blockquote>
 
                 <figcaption className="flex items-center justify-center mt-4">
-                  <div className="relative w-9 h-9 rounded-full overflow-hidden ring-1 ring-gray-100">
+                  <div className="relative w-9 h-9 rounded-full overflow-hidden ring-1 ring-gray-100 select-none">
                     <Image src={t.user?.image} alt={t.user?.username} className='object-cover' fill sizes="36px" />
                   </div>
 

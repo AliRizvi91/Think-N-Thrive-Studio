@@ -89,7 +89,7 @@ const handleSubmit = async (e: FormEvent) => {
     return (
         <Container maxWidth="Exl" className="pt-32 min-h-screen">
             <div className="grid md:grid-cols-2 gap-10 relative md:top-[30vh] top-[13vh] ">
-                <div className="flex justify-center items-center">
+                <div className="flex justify-center items-center select-none">
                     <object
                         data="/assets/images/Admission.svg"
                         type="image/svg+xml"
