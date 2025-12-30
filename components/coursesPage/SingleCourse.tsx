@@ -58,7 +58,6 @@ export default function SingleCourse({
         prev.map((r) => (r._id === tempReview._id ? savedReview : r))
       );
     } catch (err) {
-      console.error(err);
       setReviews((prev) => prev.filter((r) => r._id !== tempReview._id));
     } finally {
       setIsPosting(false);

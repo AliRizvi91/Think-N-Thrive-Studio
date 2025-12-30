@@ -17,8 +17,10 @@ export const getAllFaqs = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("faq/getAll", async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get<IFaq[]>(`${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs`);
-    return response.data;
+    const response = await axios.get<{ success: boolean; data: IFaq[] }>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs`
+    );
+    return response.data.data; // <-- extract the array
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to fetch FAQs");
   }
@@ -31,8 +33,10 @@ export const getFaqById = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("faq/getById", async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get<IFaq>(`${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs/${id}`);
-    return response.data;
+    const response = await axios.get<{ success: boolean; data: IFaq }>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs/${id}`
+    );
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to fetch FAQ");
   }
@@ -45,10 +49,12 @@ export const postFaq = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("faq/post", async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.post<IFaq>(`${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs`, data, {
-      headers: { "Content-Type": "application/json" },
-    });
-    return response.data;
+    const response = await axios.post<{ success: boolean; data: IFaq }>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs`,
+      data,
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to create FAQ");
   }
@@ -61,10 +67,12 @@ export const updateFaq = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("faq/update", async ({ id, data }, { rejectWithValue }) => {
   try {
-    const response = await axios.put<IFaq>(`${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs/${id}`, data, {
-      headers: { "Content-Type": "application/json" },
-    });
-    return response.data;
+    const response = await axios.put<{ success: boolean; data: IFaq }>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/faqs/${id}`,
+      data,
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to update FAQ");
   }

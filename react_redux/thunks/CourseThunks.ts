@@ -1,12 +1,9 @@
-// thunks/CourseThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
 
-
-
-export interface ICourse{
-  _id: string; // add this line
+export interface ICourse {
+  _id: string;
   image: string;
   title: string;
   description: string;
@@ -17,15 +14,6 @@ export interface ICourse{
   updatedAt: Date;
 }
 
-// API error type
-interface ApiError {
-  message: string;
-  response?: {
-    data?: { message?: string };
-    status?: number;
-  };
-}
-
 // ---- getAllCourses ----
 export const getAllCourses = createAsyncThunk<
   ICourse[],
@@ -33,14 +21,15 @@ export const getAllCourses = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("course/getAll", async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get<ICourse[]>(
+    const response = await axios.get<{ success: boolean; data: ICourse[] }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course`
     );
-    return response.data;
+
+    return Array.isArray(response.data.data) ? response.data.data : [];
   } catch (error: any) {
-    const err: ApiError = error;
-    console.error("Get All Courses Error", err);
-    return rejectWithValue(err.response?.data?.message || "Failed to fetch courses");
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch courses"
+    );
   }
 });
 
@@ -51,14 +40,15 @@ export const getCourseById = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("course/getById", async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get<ICourse>(
+    const response = await axios.get<{ success: boolean; data: ICourse }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course/${id}`
     );
-    return response.data;
+
+    return response.data.data;
   } catch (error: any) {
-    const err: ApiError = error;
-    console.error("Get Course By ID Error", err);
-    return rejectWithValue(err.response?.data?.message || "Failed to fetch course");
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch course"
+    );
   }
 });
 
@@ -69,16 +59,17 @@ export const postCourse = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("course/post", async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.post<ICourse>(
+    const response = await axios.post<{ success: boolean; data: ICourse }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course`,
       data,
       { headers: { "Content-Type": "application/json" } }
     );
-    return response.data;
+
+    return response.data.data;
   } catch (error: any) {
-    const err: ApiError = error;
-    console.error("Post Course Error", err);
-    return rejectWithValue(err.response?.data?.message || "Failed to create course");
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to create course"
+    );
   }
 });
 
@@ -89,16 +80,17 @@ export const updateCourse = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("course/update", async ({ id, data }, { rejectWithValue }) => {
   try {
-    const response = await axios.put<ICourse>(
+    const response = await axios.put<{ success: boolean; data: ICourse }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course/${id}`,
       data,
       { headers: { "Content-Type": "application/json" } }
     );
-    return response.data;
+
+    return response.data.data;
   } catch (error: any) {
-    const err: ApiError = error;
-    console.error("Update Course Error", err);
-    return rejectWithValue(err.response?.data?.message || "Failed to update course");
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to update course"
+    );
   }
 });
 
@@ -109,11 +101,13 @@ export const deleteCourse = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("course/delete", async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course/${id}`);
-    return id; // return deleted id for reducer
+    await axios.delete(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course/${id}`
+    );
+    return id;
   } catch (error: any) {
-    const err: ApiError = error;
-    console.error("Delete Course Error", err);
-    return rejectWithValue(err.response?.data?.message || "Failed to delete course");
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to delete course"
+    );
   }
 });

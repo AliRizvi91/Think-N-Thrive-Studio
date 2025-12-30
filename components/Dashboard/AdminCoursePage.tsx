@@ -181,7 +181,7 @@ export default function AdminCoursePage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-white/10 backdrop-blur-md rounded-2xl p-6 flex flex-col gap-4"
+          className="bg-white/10 backdrop-blur-md rounded-2xl p-6 flex flex-col gap-2"
         >
           <h2 className="text-xl font-bold">All Courses</h2>
 

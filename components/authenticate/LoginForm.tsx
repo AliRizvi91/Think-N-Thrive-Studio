@@ -51,11 +51,11 @@ const LoginForm: React.FC<Props> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({ email: true, password: true });
+    setFormData({email:"" , password:""})
 
     if (!validateForm()) return;
 
     await onLogin(formData);
-    // router.push("/dashboard");
   };
 
   return (
@@ -66,7 +66,7 @@ const LoginForm: React.FC<Props> = ({
       transition={{ duration: 0.5 }}
       className="backdrop-blur-md bg-black/5 p-8 rounded-2xl shadow-lg w-96"
     >
-      <h1 className="text-3xl font-bold text-center mb-6">Login</h1>
+      <h1 className="text-3xl font-bold text-center mb-6 select-none">Login</h1>
 
       {error && (
         <div className="mb-4 p-2 bg-red-500/20 border border-red-500 rounded text-red-400 text-sm">
@@ -76,7 +76,7 @@ const LoginForm: React.FC<Props> = ({
 
       <form onSubmit={handleSubmit} className="w-full">
         {/* Email */}
-        <div className="mb-3 relative">
+        <div className="mb-3 relative select-none">
           <IoMailUnreadOutline className="absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="email"
@@ -93,7 +93,7 @@ const LoginForm: React.FC<Props> = ({
         </div>
 
         {/* Password */}
-        <div className="mb-6 relative">
+        <div className="mb-6 relative select-none">
           <IoLockClosed className="absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type={showPassword ? "text" : "password"}
@@ -124,7 +124,7 @@ const LoginForm: React.FC<Props> = ({
           type="submit"
           disabled={isLoading}
           whileHover={{ scale: 1.02 }}
-          className="w-full bg-black text-white py-3 rounded font-semibold cursor-pointer"
+          className="select-none w-full bg-black text-white py-3 rounded font-semibold cursor-pointer"
         >
           {isLoading ? "Signing in..." : "Sign In"}
         </motion.button>

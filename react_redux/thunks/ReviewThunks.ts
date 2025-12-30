@@ -15,32 +15,34 @@ export interface IUser {
 
 export interface IReview {
   _id: string;
-  user: IUser; // populated user object
-  course: ICourse; // courseId
+  user: IUser;       // populated user
+  course: ICourse;   // populated course
   comment: string;
   createdAt: string;
   updatedAt: string;
 }
+
 export interface UIReview {
   _id: string;
-  comment: string;              // UI always needs this
+  comment: string;
   user?: Partial<IUser>;
   course?: ICourse;
   createdAt?: string;
   updatedAt?: string;
 }
 
-// ---- getAllReviews ----
+/* ---------------- GET ALL REVIEWS ---------------- */
 export const getAllReviews = createAsyncThunk<
   IReview[],
   void,
   { state: RootState; rejectValue: string }
 >("review/getAll", async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get<IReview[]>(
+    const response = await axios.get<{ success: boolean; data: IReview[] }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/review`
     );
-    return response.data;
+
+    return Array.isArray(response.data.data) ? response.data.data : [];
   } catch (error: any) {
     return rejectWithValue(
       error.response?.data?.message || "Failed to fetch reviews"
@@ -48,17 +50,18 @@ export const getAllReviews = createAsyncThunk<
   }
 });
 
-// ---- getReviewsByCourse ----
+/* ---------------- GET REVIEWS BY COURSE ---------------- */
 export const getReviewsByCourse = createAsyncThunk<
   IReview[],
   string,
   { state: RootState; rejectValue: string }
 >("review/getByCourse", async (courseId, { rejectWithValue }) => {
   try {
-    const response = await axios.get<IReview[]>(
+    const response = await axios.get<{ success: boolean; data: IReview[] }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/review/course/${courseId}`
     );
-    return response.data;
+
+    return Array.isArray(response.data.data) ? response.data.data : [];
   } catch (error: any) {
     return rejectWithValue(
       error.response?.data?.message || "Failed to fetch course reviews"
@@ -66,22 +69,21 @@ export const getReviewsByCourse = createAsyncThunk<
   }
 });
 
-// ---- postReview ----
+/* ---------------- POST REVIEW ---------------- */
 export const postReview = createAsyncThunk<
   IReview,
-  { user: string | undefined; course: string; comment?: string },
+  { user?: string; course: string; comment?: string },
   { state: RootState; rejectValue: string }
 >("review/post", async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.post<IReview>(
+    const response = await axios.post<{ success: boolean; data: IReview }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/review`,
       data,
       { headers: { "Content-Type": "application/json" } }
     );
-    if(response){
-      toast.success('Comment Posted')
-    }
-    return response.data;
+
+    toast.success("Comment Posted");
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(
       error.response?.data?.message || "Failed to create review"
@@ -89,19 +91,20 @@ export const postReview = createAsyncThunk<
   }
 });
 
-// ---- updateReview ----
+/* ---------------- UPDATE REVIEW ---------------- */
 export const updateReview = createAsyncThunk<
   IReview,
   { id: string; data: { comment?: string } },
   { state: RootState; rejectValue: string }
 >("review/update", async ({ id, data }, { rejectWithValue }) => {
   try {
-    const response = await axios.put<IReview>(
+    const response = await axios.put<{ success: boolean; data: IReview }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/review/${id}`,
       data,
       { headers: { "Content-Type": "application/json" } }
     );
-    return response.data;
+
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(
       error.response?.data?.message || "Failed to update review"
@@ -109,7 +112,7 @@ export const updateReview = createAsyncThunk<
   }
 });
 
-// ---- deleteReview ----
+/* ---------------- DELETE REVIEW ---------------- */
 export const deleteReview = createAsyncThunk<
   string,
   string,

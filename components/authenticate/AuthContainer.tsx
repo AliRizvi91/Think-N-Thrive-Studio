@@ -18,11 +18,7 @@ const AuthContainer = () => {
     try {
       const result = await dispatch(login(data)).unwrap();
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else if (typeof error === 'string') {
-        toast.error(error);
-      }
+      console.log(error);
     }
   };
 

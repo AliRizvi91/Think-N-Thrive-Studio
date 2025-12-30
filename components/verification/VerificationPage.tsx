@@ -1,114 +1,62 @@
-'use client'
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { SiMinutemailer } from "react-icons/si";
-import type { Metadata } from "next";
-import { MdError } from "react-icons/md";
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-// RTK
-import { ResendToken, TokenVerification } from '@/react_redux/thunks/UserThunks';
+import { MdError } from "react-icons/md";
+import { SiMinutemailer } from "react-icons/si";
 
-// components
-import MiniLoading from '@/components/pocket/MiniLoading';
+import { ResendToken, TokenVerification } from '@/react_redux/thunks/UserThunks';
 import { useAppDispatch } from '@/components/reduxComponents/ReduxHook';
+
+import MiniLoading from '@/components/pocket/MiniLoading';
 import MainButton from '../pocket/MainButton';
 
-
-
-
-// ✅ Metadata (with noindex)
-export const metadata: Metadata = {
-  title: "Verify Email | Raza Tech Solution",
-  description:
-    "Secure email verification page for Raza Tech Solution. Please verify your email to continue.",
-  robots: {
-    index: false, // 👈 prevent search engine indexing
-    follow: false,
-  },
-  openGraph: {
-    title: "Verify Email | Raza Tech Solution",
-    description:
-      "Complete your email verification securely at Raza Tech Solution.",
-    url:
-      process.env.NEXT_PUBLIC_FRONTEND_BASEURL +
-      "/en/verify-email" || "http://localhost:3000/en/verify-email",
-    images: [
-      {
-        url: "/opengraph-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Raza Tech Solution Email Verification",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary",
-    title: "Verify Email | Raza Tech Solution",
-    description:
-      "Complete your email verification securely at Raza Tech Solution.",
-  },
-  alternates: {
-    canonical:
-      process.env.NEXT_PUBLIC_FRONTEND_BASEURL +
-      "/en/verify-email" || "http://localhost:3000/en/verify-email",
-  },
-};
-
-
-// Define types for the verification status
-type VerificationStatus = 'pending' | 'success' | 'error';// app/[lang]/(no-nav-footer)/verify-email/page.tsx
-
+type status  = 'pending' | 'success' | 'error';
 
 function VerificationPage() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
   const dispatch = useAppDispatch();
-  const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('pending');
 
-  // In VerificationPage component, after successful verification
+  const [status, setStatus] = useState<status >('pending');
+
   useEffect(() => {
-    if (token) {
-      dispatch(TokenVerification({ token }))
-        .unwrap()
-        .then((response) => {
-          setVerificationStatus('success');
-          localStorage.setItem('token', response.token);
-          window.dispatchEvent(new Event('storage'));
-        })
-        .catch(() => setVerificationStatus('error'));
+    const token = searchParams.get('token');
 
-    } else {
-      setVerificationStatus('error');
-    }
-  }, [dispatch, token]);
-
-  const handleResendToken = async () => {
-    if (!email || !token) {
-      console.error('Email or token is missing');
+    if (!token) {
+      setStatus('error');
       return;
     }
 
+    dispatch(TokenVerification({ token }))
+      .unwrap()
+      .then((res) => {
+        localStorage.setItem('token', res.token);
+        window.dispatchEvent(new Event('storage'));
+        setStatus('success');
+      })
+      .catch(() => {
+        setStatus('error');
+      });
+  }, [dispatch, searchParams]);
+
+  const handleResendToken = async () => {
+    const email = searchParams.get('email');
+    if (!email) return;
+
     try {
-      await dispatch(ResendToken({
-        email: email,
-        token: token
-      })).unwrap();
-      // Close the tab after successful dispatch
+      await dispatch(ResendToken({ email })).unwrap();
       window.close();
-    } catch (error) {
-      // Errors are already handled in the thunk
-      console.error('Failed to resend token:', error);
-    }
+    } catch {}
   };
 
-  if (verificationStatus === 'pending') {
+  if (status  === 'pending') {
     return (
       <MiniLoading />
     );
   }
 
-  if (verificationStatus === 'error') {
+  if (status  === 'error') {
     return (
       <motion.div
         initial={{ opacity: 0 }}

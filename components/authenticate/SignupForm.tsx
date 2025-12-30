@@ -84,18 +84,18 @@ const SignupForm: React.FC<Props> = ({ onSwitch }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setTouched({
       username: true,
       email: true,
       password: true
     });
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    setErrors({...errors, general: ""});
-    
+    setErrors({ ...errors, general: "" });
+
     try {
       const result = await dispatch(
         signup({
@@ -105,27 +105,20 @@ const SignupForm: React.FC<Props> = ({ onSwitch }) => {
           image: formData.image || undefined,
         })
       );
-      
-      if(result){
-        // Clear form after successful submission
+
+      if (signup.fulfilled.match(result)) {
         setFormData({
           username: "",
           email: "",
           password: "",
           image: null,
         });
-        
-        setTouched({
-          username: false,
-          email: false,
-          password: false
-        });
 
-        // window.location.href= '/'
+        window.location.href = "/";
       }
+
     } catch (error: any) {
-      console.error("Signup failed:", error);
-      setErrors({...errors, general: error.message || "Signup failed. Please try again."});
+      setErrors({ ...errors, general: error.message || "Signup failed. Please try again." });
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +132,7 @@ const SignupForm: React.FC<Props> = ({ onSwitch }) => {
       transition={{ duration: 0.5 }}
       className="backdrop-blur-md bg-white/5 p-8 rounded-2xl shadow-lg w-96 text-black flex flex-col justify-center items-center"
     >
-        <h1 className="text-3xl font-bold text-center mb-2">Sign Up</h1>
+      <h1 className="text-3xl font-bold text-center mb-2 select-none">Sign Up</h1>
 
       <form onSubmit={handleSubmit} className="w-full">
         <div className="w-full h-full my-4 flex justify-center items-center">
@@ -155,14 +148,13 @@ const SignupForm: React.FC<Props> = ({ onSwitch }) => {
           </div>
         )}
 
-        <div className="mb-3 relative">
-        <CiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 " size={20} />
+        <div className="mb-3 relative select-none">
+          <CiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 " size={20} />
           <input
             type="text"
             placeholder="Username"
-            className={`w-full p-3 pl-10 rounded-[5px] bg-black/10 text-black outline-none ${
-              errors.username && touched.username ? "border border-red-500" : "border-none"
-            }`}
+            className={`w-full p-3 pl-10 rounded-[5px] bg-black/10 text-black outline-none ${errors.username && touched.username ? "border border-red-500" : "border-none"
+              }`}
             value={formData.username}
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             onBlur={() => handleBlur("username")}
@@ -172,14 +164,13 @@ const SignupForm: React.FC<Props> = ({ onSwitch }) => {
           )}
         </div>
 
-        <div className="mb-3 relative">
+        <div className="mb-3 relative select-none">
           <IoMailUnreadOutline className="absolute left-3 top-1/2 transform -translate-y-1/2 " size={20} />
           <input
             type="email"
             placeholder="Email"
-            className={`w-full p-3 pl-10 rounded-[5px] bg-black/10 text-black outline-none ${
-              errors.email && touched.email ? "border border-red-500" : "border-none"
-            }`}
+            className={`w-full p-3 pl-10 rounded-[5px] bg-black/10 text-black outline-none ${errors.email && touched.email ? "border border-red-500" : "border-none"
+              }`}
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             onBlur={() => handleBlur("email")}
@@ -189,39 +180,39 @@ const SignupForm: React.FC<Props> = ({ onSwitch }) => {
           )}
         </div>
 
-<div className="mb-6 relative">
-            <div className="relative">
-              <IoLockClosed className="absolute left-3 top-1/2 transform -translate-y-1/2  cursor-pointer" size={20} />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className={`w-full p-3 pl-10 pr-10 rounded-[9px] bg-black/10 text-black outline-none transition-all duration-200 ${errors.password && touched.password ? "border border-red-500" : "border-transparent"
-                  }`}
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                onBlur={() => handleBlur("password")}
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2  hover:text-black transition-colors"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
-              >
-                {showPassword ? <IoMdEyeOff size={20} /> : <IoEye size={20} />}
-              </button>
-            </div>
-            {errors.password && touched.password && (
-              <p className="text-red-400 text-xs mt-1 ml-1">{errors.password}</p>
-            )}
+        <div className="mb-6 relative select-none">
+          <div className="relative">
+            <IoLockClosed className="absolute left-3 top-1/2 transform -translate-y-1/2  cursor-pointer" size={20} />
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className={`w-full p-3 pl-10 pr-10 rounded-[9px] bg-black/10 text-black outline-none transition-all duration-200 ${errors.password && touched.password ? "border border-red-500" : "border-transparent"
+                }`}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onBlur={() => handleBlur("password")}
+              disabled={isLoading}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2  hover:text-black transition-colors"
+              onClick={() => setShowPassword(!showPassword)}
+              disabled={isLoading}
+            >
+              {showPassword ? <IoMdEyeOff size={20} /> : <IoEye size={20} />}
+            </button>
           </div>
+          {errors.password && touched.password && (
+            <p className="text-red-400 text-xs mt-1 ml-1">{errors.password}</p>
+          )}
+        </div>
 
         <motion.button
           type="submit"
           whileHover={!isLoading ? { scale: 1.02, backgroundColor: "#000000" } : {}}
           whileTap={!isLoading ? { scale: 1 } : {}}
           transition={{ duration: 0.5 }}
-          className={`w-full bg-black text-white py-3 rounded font-semibold shadow-sm cursor-pointer uppercase flex justify-center items-center`}
+          className={`select-none w-full bg-black text-white py-3 rounded font-semibold shadow-sm cursor-pointer uppercase flex justify-center items-center`}
           disabled={isLoading}
         >
           {isLoading ? (

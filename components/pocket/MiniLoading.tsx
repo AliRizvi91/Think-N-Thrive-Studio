@@ -2,7 +2,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export default function MiniLoading() {
   return (
-    <div className="flex items-center justify-center w-full h-full bg-transparent">
+    <div className="flex items-center justify-center w-full h-screen bg-transparent">
       {/* Black background circle */}
 
       <div role="status">

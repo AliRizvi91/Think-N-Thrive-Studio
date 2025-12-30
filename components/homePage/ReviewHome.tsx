@@ -48,33 +48,6 @@ export default function ReviewHome() {
   
   const lastSix = allReviews.slice(-4);
 
-          const faqsData = [
-  {
-    value: "item-1",
-    question: "Intuitive user interface designed for both beginners?",
-    answer: [
-      "Our flagship product combines cutting-edge technology with sleek design.",
-      "Key features include advanced processing and an intuitive UI.",
-    ],
-  },
-  {
-    value: "item-2",
-    question: "Shipping Details",
-    answer: [
-      "We offer worldwide shipping with trusted partners.",
-      "Track your shipment in real-time.",
-    ],
-  },
-  {
-    value: "item-3",
-    question: "Return Policy",
-    answer: [
-      "We offer a 30-day return policy.",
-      "Free return shipping and fast refunds.",
-    ],
-  },
-]
-
 useEffect(()=>{
   dispatch(getAllReviews())
   dispatch(getAllFaqs())

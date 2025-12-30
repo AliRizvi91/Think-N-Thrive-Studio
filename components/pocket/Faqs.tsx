@@ -7,18 +7,21 @@ import {
 
 import { IFaq } from '@/react_redux/thunks/FaqThunks';
 
-
 type FaqsProps = {
-  items: IFaq[]
+  items: IFaq[] | null | undefined; // allow null/undefined
 }
 
 export function Faqs({ items }: FaqsProps) {
+  if (!Array.isArray(items) || items.length === 0) {
+    return <p className="text-center text-gray-500">No FAQs available</p>;
+  }
+
   return (
     <Accordion
       type="single"
       collapsible
       className="w-full"
-      defaultValue={items?.[0]?._id}
+      defaultValue={items[0]?._id}
     >
       {items.map((faq) => (
         <AccordionItem key={faq._id} value={faq._id} className="p-8 shadow-md">
@@ -33,7 +36,6 @@ export function Faqs({ items }: FaqsProps) {
               <p>{faq.answer}</p>
             )}
           </AccordionContent>
-
         </AccordionItem>
       ))}
     </Accordion>

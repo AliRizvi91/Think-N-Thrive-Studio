@@ -75,7 +75,7 @@ export const DetailModal = ({ open, onClose, title, data }: DetailModalProps) =>
                 >
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold">{title}</h2>
-                        <button onClick={onClose} className="hover:text-red-400 transition">
+                        <button onClick={onClose} className="hover:text-red-400 transition cursor-pointer">
                             <MdClose size={22} />
                         </button>
                     </div>
@@ -190,12 +190,13 @@ export default function DetailsPage() {
                         {Object.values(reviewsByCourse).map(({ course, reviews }) => (
                             <motion.div
                                 key={course._id}
-                                className="bg-white/5 rounded-2xl p-3 border border-white/10"
+                                className="bg-white/5 rounded-2xl p-2 border border-white/10"
                             >
-                                <h3 className="text-xl font-semibold mb-4 text-pink-400">{course.title}</h3>
+                                <h3 className="text-xl font-semibold mb-2 text-pink-400">{course.title}</h3>
                                 <div className="space-y-2">
                                     {reviews.map((r) => (
-                                        <div className="bg-black/30 rounded-lg p-4 flex gap-2" key={r._id}>
+                                        <div className="bg-black/30 rounded-lg p-4 gap-3 flex flex-row justify-center items-center" key={r._id}>
+                                            <div className="w-fit">    
                                             <div className="relative w-10 h-10 rounded-full overflow-hidden select-none">
                                                 <Image
                                                     src={r.user?.image || 'https://res.cloudinary.com/dkbz23qyt/image/upload/v1759525517/Avatar_k3tkyn.png'}
@@ -203,6 +204,7 @@ export default function DetailsPage() {
                                                     fill
                                                     className="object-cover"
                                                 />
+                                            </div>
                                             </div>
                                             <div className="flex flex-col justify-center items-start">
                                                 <p className="text-sky-300 italic text-sm mb-1">— {r.user?.username || "Anonymous User"}</p>

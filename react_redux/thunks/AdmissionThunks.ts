@@ -2,8 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
 import { toast } from "sonner";
-import { log } from "console";
-
 
 export interface IAdmission {
   _id: string;
@@ -24,12 +22,20 @@ export const getAllAdmissions = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("Admission/getAll", async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get<IAdmission[]>(
+    const response = await axios.get<{
+      success: boolean;
+      data: IAdmission[];
+    }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/admission`
     );
-    return response.data;
+
+    return Array.isArray(response.data.data)
+      ? response.data.data
+      : [];
   } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || "Failed to fetch Admissions");
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch Admissions"
+    );
   }
 });
 
@@ -40,17 +46,16 @@ export const getAdmissionById = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("Admission/getById", async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get<IAdmission>(
+    const response = await axios.get<{ success: boolean; data: IAdmission }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/admission/${id}`
     );
-    return response.data;
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to fetch Admission");
   }
 });
 
 // ---- postAdmission ----
-
 export const postAdmission = createAsyncThunk<
   IAdmission,
   {
@@ -64,17 +69,15 @@ export const postAdmission = createAsyncThunk<
   { rejectValue: string }
 >("Admission/post", async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.post<IAdmission>(
+    const response = await axios.post<{ success: boolean; data: IAdmission }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/admission`,
       data,
       { headers: { "Content-Type": "application/json" } }
     );
     toast.success("Admission created successfully!");
-    return response.data;
+    return response.data.data;
   } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || "Failed to create Admission"
-    );
+    return rejectWithValue(error.response?.data?.message || "Failed to create Admission");
   }
 });
 
@@ -85,12 +88,12 @@ export const updateAdmission = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("Admission/update", async ({ id, data }, { rejectWithValue }) => {
   try {
-    const response = await axios.put<IAdmission>(
+    const response = await axios.put<{ success: boolean; data: IAdmission }>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/admission/${id}`,
       data,
       { headers: { "Content-Type": "application/json" } }
     );
-    return response.data;
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to update Admission");
   }
@@ -103,7 +106,9 @@ export const deleteAdmission = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("Admission/delete", async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/admission/${id}`);
+    await axios.delete(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/admission/${id}`
+    );
     return id;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to delete Admission");

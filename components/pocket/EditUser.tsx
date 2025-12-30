@@ -73,7 +73,6 @@ const handleSubmit = async () => {
     await dispatch(updateUserThunk({ id: userId, data: form }));
     toast.success("User updated successfully");
   } catch (err) {
-    console.error(err);
     toast.error("Failed to update user");
   }
 };

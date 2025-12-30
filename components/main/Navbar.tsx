@@ -42,7 +42,7 @@ function Navbar() {
         { label: "Profile", ariaLabel: "Profile", href: "/profile" },
         { label: "Details", ariaLabel: "Details", href: "/details" },
         { label: "Faqs", ariaLabel: "LinkedIn", href: "/faqs" },
-        { label: "AdminCourse", ariaLabel: "AdminCourse", href: "/admin-course" },
+        { label: "AdminCourse", ariaLabel: "AdminCourse", href: "/adminCourse" },
       ]
     }
   ];

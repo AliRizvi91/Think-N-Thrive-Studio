@@ -1,18 +1,18 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
+// ================= TYPES =================
 
-// Types
-interface ErrorPayload {
-  message?: string;
-  status?: number;
+interface ErrorResponse {
+  message: string;
 }
-interface User {
+
+export interface User {
   _id: string;
   name: string;
   email: string;
-  // add more fields as per your backend response
+  image?: string;
 }
 
 export interface LoginData {
@@ -24,240 +24,257 @@ export interface LoginResponse {
   user: User;
   token: string;
 }
-
-interface TokenPayload {
-  token: string;
+export interface ErrorPayload {
+  message?: string;
+  status?: number;
 }
 
-interface ResendTokenPayload {
-  email: string;
-  token: string;
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
 }
 
-interface ResetPasswordPayload {
-  token: string;
-  password: string;
-}
+// ================= GET ALL USERS =================
 
-interface UpdateUserPayload {
-  id: string;
-  formData: Partial<User>;
-}
-
-interface ErrorResponse {
-  message: string;
-}
-
-// getAllUsers
-export const getAllUsers = createAsyncThunk<User[]>(
-  "Users/All",
-  async () => {
-    const response = await axios.get<User[]>(
+export const getAllUsers = createAsyncThunk<
+  User[],
+  void,
+  { rejectValue: ErrorResponse }
+>("users/getAll", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axios.get<ApiResponse<User[]>>(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user`
     );
-    return response.data;
-  }
-);
 
-//------ Login ------
+    return response.data.data;
+  } catch (err) {
+    const error = err as AxiosError<ErrorResponse>;
+    return rejectWithValue(
+      error.response?.data || { message: "Failed to fetch users" }
+    );
+  }
+});
+
+// ================= LOGIN =================
+
 export const login = createAsyncThunk<
   LoginResponse,
   LoginData,
   { rejectValue: ErrorResponse }
->(
-  "user/login",
-  async (data, { rejectWithValue }) => {
-    try {
-      const response = await axios.post<LoginResponse>(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/login`,
-        data
-      );
+>("user/login", async (data, { rejectWithValue }) => {
+  try {
+    const response = await axios.post<ApiResponse<LoginResponse>>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/login`,
+      data
+    );
 
-      toast.success("Verification email sent. Check your inbox.");
-      return response.data;
-
-    } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      toast.error(error.response?.data?.message || "Login failed");
-      return rejectWithValue(
-        error.response?.data || { message: "Login failed" }
-      );
-    }
+    toast.success("Email has been send.");
+    return response.data.data;
+  } catch (err) {
+    const error = err as AxiosError<ErrorResponse>;
+    toast.error("Email or password is not corrected");
+    return rejectWithValue(
+      error.response?.data || { message: "Login failed" }
+    );
   }
-);
+});
 
+// ================= TOKEN VERIFICATION =================
 
-
-// Token Verification
-export const TokenVerification = createAsyncThunk<any, TokenPayload, { rejectValue: ErrorResponse }>(
-  "TokenVerification/User",
+export const TokenVerification = createAsyncThunk<
+  { user: User; token: string },
+  { token: string },
+  { rejectValue: ErrorResponse }
+>(
+  "user/verifyToken",
   async ({ token }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
+      const response = await axios.post<
+        ApiResponse<{ user: User; token: string }>
+      >(
         `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/verify-token`,
         { token }
       );
-      return response.data;
+
+      return response.data.data;
     } catch (err) {
       const error = err as AxiosError<ErrorResponse>;
-      toast.error(error.response?.data?.message || 'Verification failed');
-      return rejectWithValue(error.response?.data || { message: error.message });
-    }
-  }
-);
+      toast.error(error.response?.data?.message || "Verification failed");
 
-// ResendToken
-export const ResendToken = createAsyncThunk<any, ResendTokenPayload, { rejectValue: ErrorResponse }>(
-  "user/resendToken",
-  async ({ email, token }, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/resend-token`,
-        { email, token }
+      return rejectWithValue(
+        error.response?.data ?? { message: "Verification failed" }
       );
-      return response.data;
-    } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      toast.error(error.response?.data?.message || 'Verification failed');
-      return rejectWithValue(error.response?.data || { message: error.message });
     }
   }
 );
 
-// mailForResetPassword
-export const mailForResetPassword = createAsyncThunk<any, { email: string }, { rejectValue: ErrorResponse }>(
-  "user/mailResetPassword",
-  async ({ email }, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/mail-for-reset-password`,
-        { email }
-      );
-      return response.data;
-    } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      toast.error(error.response?.data?.message || 'Verification failed');
-      return rejectWithValue(error.response?.data || { message: error.message });
-    }
-  }
-);
 
-// ResetPassword
-export const ResetPassword = createAsyncThunk<any, ResetPasswordPayload, { rejectValue: ErrorResponse }>(
-  "user/resetPassword",
-  async ({ token, password }, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/reset-password`,
-        { token, password }
-      );
+// ================= RESEND TOKEN =================
 
-      if (response.status === 200) {
-        if (typeof window !== 'undefined') {
-          window.location.href = `/response-resetpassword?token=${token}`;
-        }
-      }
-
-      return response.data;
-    } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      toast.error(error.response?.data?.message || 'Password reset failed');
-      return rejectWithValue(error.response?.data || { message: error.message });
-    }
-  }
-);
-
-// Signup
-// UserThunks.ts
-export const signup = createAsyncThunk<
-  { user: User; token: string },  // return type
-  { username: string; email: string; password: string; image?: File }, // payload
+export const ResendToken = createAsyncThunk<
+  string,
+  { email: string },
   { rejectValue: ErrorResponse }
->(
-  "signup/User",
-  async (formData, { rejectWithValue }) => {
-    try {
-      const data = new FormData();
-      data.append("username", formData.username);
-      data.append("email", formData.email);
-      data.append("password", formData.password);
-      if (formData.image) {
-        data.append("image", formData.image); // ✅ attach file
-      }
+>("user/resendToken", async ({ email }, { rejectWithValue }) => {
+  try {
+    const response = await axios.post<ApiResponse<string>>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/resend-token`,
+      { email }
+    );
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/signup`,
-        data,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      toast.success("SignUp successfully");
-      return response.data;
-    } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      return rejectWithValue(error.response?.data || { message: error.message });
-    }
+    toast.success("Token resent successfully");
+    return response.data.data;
+  } catch (err) {
+    const error = err as AxiosError<ErrorResponse>;
+    toast.error(error.response?.data?.message || "Resend failed");
+    return rejectWithValue(
+      error.response?.data || { message: "Resend failed" }
+    );
   }
-);
+});
+
+// ================= MAIL FOR RESET PASSWORD =================
+
+export const mailForResetPassword = createAsyncThunk<
+  string,
+  { email: string },
+  { rejectValue: ErrorResponse }
+>("user/mailResetPassword", async ({ email }, { rejectWithValue }) => {
+  try {
+    const response = await axios.post<ApiResponse<string>>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/mail-for-reset-password`,
+      { email }
+    );
+
+    toast.success("Reset mail sent");
+    return response.data.data;
+  } catch (err) {
+    const error = err as AxiosError<ErrorResponse>;
+    toast.error(error.response?.data?.message || "Mail failed");
+    return rejectWithValue(
+      error.response?.data || { message: "Mail failed" }
+    );
+  }
+});
+
+// ================= RESET PASSWORD =================
+
+export const ResetPassword = createAsyncThunk<
+  string,
+  { token: string; password: string },
+  { rejectValue: ErrorResponse }
+>("user/resetPassword", async ({ token, password }, { rejectWithValue }) => {
+  try {
+    const response = await axios.post<ApiResponse<string>>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/reset-password`,
+      { token, password }
+    );
+
+    toast.success("Password reset successful");
+    return response.data.data;
+  } catch (err) {
+    const error = err as AxiosError<ErrorResponse>;
+    toast.error(error.response?.data?.message || "Reset failed");
+    return rejectWithValue(
+      error.response?.data || { message: "Reset failed" }
+    );
+  }
+});
+
+// ================= SIGNUP =================
+
+export const signup = createAsyncThunk<
+  { user: User; token: string },
+  { username: string; email: string; password: string; image?: File },
+  { rejectValue: ErrorResponse }
+>("user/signup", async (formData, { rejectWithValue }) => {
+  try {
+    const data = new FormData();
+    data.append("username", formData.username);
+    data.append("email", formData.email);
+    data.append("password", formData.password);
+    if (formData.image) data.append("image", formData.image);
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/signup`,
+      data,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    toast.success("Signup successful");
+
+    // ✅ RETURN EXACT BACKEND RESPONSE
+    return {
+      user: response.data.user,
+      token: response.data.token,
+    };
+  } catch (err) {
+    const error = err as AxiosError<ErrorResponse>;
+    return rejectWithValue(
+      error.response?.data || { message: "Signup failed" }
+    );
+  }
+});
 
 
-// GetMe
-export const getme = createAsyncThunk<User, void, { rejectValue: ErrorPayload }>(
-  "getme/User",
-  async (_, { rejectWithValue }) => {
-    try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+// ================= GET ME =================
 
-      if (!token) {
-        return rejectWithValue({
-          message: "No token found",
-          status: 401
-        });
-      }
+export const getme = createAsyncThunk<
+  User,
+  void,
+  { rejectValue: ErrorPayload }
+>("getme/User", async (_, { rejectWithValue }) => {
+  try {
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-      const response = await axios.get<User>(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/profile`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      return response.data;
-    } catch (error: any) {
+    if (!token) {
       return rejectWithValue({
-        message: error.response?.data?.message || "Failed to fetch user profile",
-        status: error.response?.status || 500
+        message: "No token found",
+        status: 401,
       });
     }
-  }
-);
 
-export const updateUserThunk = createAsyncThunk(
-  "users/updateUser",
-  async (
-    { id, data }: { id: string; data: FormData },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/${id}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data || { message: error.message }
-      );
-    }
+    const response = await axios.get<User>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/profile`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data; // ✅ ONLY USER
+  } catch (error: any) {
+    return rejectWithValue({
+      message: error.response?.data?.message || "Failed to fetch user profile",
+      status: error.response?.status || 500,
+    });
   }
-);
+});
+
+
+
+// ================= UPDATE USER =================
+
+export const updateUserThunk = createAsyncThunk<
+  User,
+  { id: string; data: FormData },
+  { rejectValue: ErrorResponse }
+>("user/update", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const response = await axios.put<ApiResponse<User>>(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/${id}`,
+      data,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    toast.success("Profile updated");
+    return response.data.data;
+  } catch (err) {
+    const error = err as AxiosError<ErrorResponse>;
+    return rejectWithValue(
+      error.response?.data || { message: "Update failed" }
+    );
+  }
+});
