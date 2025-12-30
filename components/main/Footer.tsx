@@ -15,9 +15,9 @@ function Footer() {
     ];
     
     const icons = [
-        { icon: <BsTwitterX />, path: '/404' }, 
+        { icon: <BsTwitterX />, path: '#' }, 
         { icon: <AiFillInstagram />, path: 'https://www.instagram.com/thinknthrive_studio?igsh=MWZ3YXIzcHg2cDdjZg==' },
-        { icon: <AiFillGoogleCircle />, path: '/404' }, 
+        { icon: <AiFillGoogleCircle />, path: '#' }, 
     ];
 
 

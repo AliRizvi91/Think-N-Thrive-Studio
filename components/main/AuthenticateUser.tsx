@@ -69,8 +69,7 @@ function AuthenticateUser({ children }: AuthenticateUserProps) {
   useEffect(() => {
     if (!authCheckedRef.current) {
       dispatch({ type: "user/authChecked", payload: true });
-      authCheckedRef.current = true;
-      console.log("authChecked");
+      authCheckedRef.current = true
     }
   }, [dispatch]);
 
