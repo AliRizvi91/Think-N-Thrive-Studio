@@ -98,8 +98,11 @@ export default function CourseCards() {
     router.push("/courses");
   };
 
+  // ✅ SHOW ONLY FIRST 6 COURSES
+  const visibleCourses = allCourses?.slice(0, 6);
+
   return (
-    <section className="min-h-screen bg-[#0f1314] px-6 py-16">
+    <section className="min-h-screen bg-[#0f1314] px-6 py-16 flex flex-col justify-center items-center lg:gap-14 md:gap-10 sm:gap-7 gap-10">
       <h2 className="text-3xl md:text-5xl font-extrabold text-white text-center uppercase mb-16">
         English Mastery Courses
       </h2>
@@ -108,7 +111,7 @@ export default function CourseCards() {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="visible"   // 🔥 FIXED
+        animate="visible"
         className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         {loading ? (
@@ -118,8 +121,8 @@ export default function CourseCards() {
               className="h-[260px] w-full rounded-2xl"
             />
           ))
-        ) : allCourses && allCourses.length > 0 ? (
-          allCourses.map((course) => (
+        ) : visibleCourses && visibleCourses.length > 0 ? (
+          visibleCourses.map((course) => (
             <CourseCard key={course._id} card={course} />
           ))
         ) : (
