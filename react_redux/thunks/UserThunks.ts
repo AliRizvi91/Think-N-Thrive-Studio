@@ -196,10 +196,10 @@ export const signup = createAsyncThunk<
     if (formData.image) data.append("image", formData.image);
 
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/signup`,
-      data,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+  `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/signup`,
+  data
+);
+
 
     toast.success("Signup successful");
 
