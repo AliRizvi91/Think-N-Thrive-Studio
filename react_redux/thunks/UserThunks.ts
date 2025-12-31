@@ -190,31 +190,52 @@ export const signup = createAsyncThunk<
 >("user/signup", async (formData, { rejectWithValue }) => {
   try {
     const data = new FormData();
+
     data.append("username", formData.username);
     data.append("email", formData.email);
     data.append("password", formData.password);
-    if (formData.image) data.append("image", formData.image);
+
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
+
+    // 🔍 See what is being sent
+    console.log("FormData being sent:");
+    for (const pair of data.entries()) {
+      console.log(pair[0], pair[1]);
+    }
 
     const response = await axios.post(
-  `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/signup`,
-  data
-);
+      `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/signup`,
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
+    // 🔍 Backend response
+    console.log("Signup API response:", response.data);
 
     toast.success("Signup successful");
 
-    // ✅ RETURN EXACT BACKEND RESPONSE
     return {
       user: response.data.user,
       token: response.data.token,
     };
   } catch (err) {
     const error = err as AxiosError<ErrorResponse>;
+
+    // 🔍 Error from backend
+    console.error("Signup error:", error.response?.data);
+
     return rejectWithValue(
       error.response?.data || { message: "Signup failed" }
     );
   }
 });
+
 
 
 // ================= GET ME =================
