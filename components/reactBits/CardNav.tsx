@@ -237,7 +237,7 @@ const toggleMenu = () => {
 
         {/* CONTENT */}
         <div
-          className={`card-nav-content absolute inset-x-0 top-[60px] p-2 flex flex-col md:flex-row sm:gap-2 gap-1 ${
+          className={`card-nav-content relative inset-x-0 top-[80px] p-2 flex flex-col md:flex-row sm:gap-2 gap-1 ${
             isExpanded
               ? 'visible pointer-events-auto h-fit'
               : 'invisible pointer-events-none h-fit'
@@ -247,7 +247,7 @@ const toggleMenu = () => {
             <div
               key={idx}
               ref={setCardRef(idx)}
-              className="flex-1 rounded-xl p-4 flex flex-col md:h-[20vh] min-h-fit"
+              className="flex-1 rounded-xl p-4 flex flex-col h-auto"
               style={{ backgroundColor: item.bgColor, color: item.textColor }}
             >
               <h3 className="text-lg font-medium">{item.label}</h3>
