@@ -188,7 +188,7 @@ const toggleMenu = () => {
   /* ---------------- JSX ---------------- */
   return (
     <div
-      className={`absolute left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] z-50 top-[1.2em] md:top-[2em] ${className}`}
+      className={`absolute left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] z-50 top-[0.5em] md:top-[1em] ${className}`}
     >
       <nav
         ref={navRef}
