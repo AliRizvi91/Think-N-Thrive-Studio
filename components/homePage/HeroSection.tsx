@@ -50,7 +50,9 @@ function HeroSection() {
         </div>
         <div className="w-full h-fit sticky top-0">
 
-          <Container maxWidth="md" className="h-screen flex flex-col justify-center gap-5 items-center relative pt-[7rem]" >
+          <Container maxWidth="md" className="h-screen flex flex-col justify-center gap-5 items-center relative" style={{
+            paddingTop:'7rem',
+          }} >
 
             {/* 🔵 Image Animation */}
             <motion.div
