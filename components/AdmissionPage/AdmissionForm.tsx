@@ -47,43 +47,43 @@ function AdmissionForm() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(false);
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setSuccess(false);
 
-    const isAnyFieldEmpty = Object.values(formData).some(
-        (value) => value.trim() === ""
-    );
+        const isAnyFieldEmpty = Object.values(formData).some(
+            (value) => value.trim() === ""
+        );
 
-    if (isAnyFieldEmpty) {
-        setError("Please fill all fields");
-        return;
-    }
+        if (isAnyFieldEmpty) {
+            setError("Please fill all fields");
+            return;
+        }
 
-    const result = await dispatch(
-        postAdmission({
-            name: formData.name,
-            whatsappNumber: formData.whatsappNumber,
-            educationLevel: formData.educationLevel,
-            age: formData.age,
-            referralSource: formData.referralSource,
-            selectedCourses: [formData.selectedCourse],
-        })
-    );
+        const result = await dispatch(
+            postAdmission({
+                name: formData.name,
+                whatsappNumber: formData.whatsappNumber,
+                educationLevel: formData.educationLevel,
+                age: formData.age,
+                referralSource: formData.referralSource,
+                selectedCourses: [formData.selectedCourse],
+            })
+        );
 
-    if (postAdmission.fulfilled.match(result)) {
-        setSuccess(true);
-        setFormData({
-            name: "",
-            whatsappNumber: "",
-            educationLevel: "",
-            age: "",
-            referralSource: "",
-            selectedCourse: "",
-        });
-    }
-};
+        if (postAdmission.fulfilled.match(result)) {
+            setSuccess(true);
+            setFormData({
+                name: "",
+                whatsappNumber: "",
+                educationLevel: "",
+                age: "",
+                referralSource: "",
+                selectedCourse: "",
+            });
+        }
+    };
 
 
     return (
@@ -136,6 +136,7 @@ const handleSubmit = async (e: FormEvent) => {
                         <CustomSelect
                             options={courseOptions}
                             placeholder="Select Course"
+                            value={formData.selectedCourse}   // ✅ add this
                             onChange={(value) =>
                                 setFormData({ ...formData, selectedCourse: value })
                             }
@@ -144,10 +145,12 @@ const handleSubmit = async (e: FormEvent) => {
                         <CustomSelect
                             options={referralOptions}
                             placeholder="How did you hear about us?"
+                            value={formData.referralSource}    // ✅ add this
                             onChange={(value) =>
                                 setFormData({ ...formData, referralSource: value })
                             }
                         />
+
                     </div>
 
                     {error && <p className="text-red-500">{error}</p>}
