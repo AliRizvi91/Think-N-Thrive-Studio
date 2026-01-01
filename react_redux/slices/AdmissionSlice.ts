@@ -38,7 +38,6 @@ const AdmissionSlice = createSlice({
       })
       .addCase(getAllAdmissions.fulfilled, (state, action: PayloadAction<IAdmission[]>) => {
         state.loading = false;
-        console.log("Adminssion Slice" , action.payload);
         
         state.allAdmissions = action.payload;
       })

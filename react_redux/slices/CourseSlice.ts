@@ -1,7 +1,13 @@
 // slices/CourseSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  getAllCourses,
+  getCourseById,
+  postCourse,
+  updateCourse,
+  deleteCourse,
+} from "../thunks/CourseThunks";
 import { ICourse } from "../thunks/CourseThunks";
-import { getAllCourses, getCourseById, postCourse, updateCourse, deleteCourse } from "../thunks/CourseThunks";
 
 interface CourseState {
   allCourses: ICourse[];
@@ -21,82 +27,102 @@ const CourseSlice = createSlice({
   name: "course",
   initialState,
   reducers: {
-    clearCurrentCourse: (state) => {
+    clearCurrentCourse(state) {
       state.currentCourse = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // ---- getAllCourses ----
+      // ================= getAllCourses =================
       .addCase(getAllCourses.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getAllCourses.fulfilled, (state, action: PayloadAction<ICourse[]>) => {
-        state.loading = false;
-        state.allCourses = action.payload;
-      })
+      .addCase(
+        getAllCourses.fulfilled,
+        (state, action: PayloadAction<ICourse[]>) => {
+          state.loading = false;
+          state.allCourses = action.payload;
+        }
+      )
       .addCase(getAllCourses.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch courses";
+        state.error = (action.payload as string) || "Failed to fetch courses";
       })
 
-      // ---- getCourseById ----
+      // ================= getCourseById =================
       .addCase(getCourseById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getCourseById.fulfilled, (state, action: PayloadAction<ICourse>) => {
-        state.loading = false;
-        state.currentCourse = action.payload;
-      })
+      .addCase(
+        getCourseById.fulfilled,
+        (state, action: PayloadAction<ICourse>) => {
+          state.loading = false;
+          state.currentCourse = action.payload;
+        }
+      )
       .addCase(getCourseById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch course";
+        state.error = (action.payload as string) || "Failed to fetch course";
       })
 
-      // ---- postCourse ----
+      // ================= postCourse =================
       .addCase(postCourse.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(postCourse.fulfilled, (state, action: PayloadAction<ICourse>) => {
-        state.loading = false;
-        state.allCourses.unshift(action.payload);
-      })
+      .addCase(
+        postCourse.fulfilled,
+        (state, action: PayloadAction<ICourse>) => {
+          state.loading = false;
+          state.allCourses.unshift(action.payload);
+        }
+      )
       .addCase(postCourse.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to create course";
+        state.error = (action.payload as string) || "Failed to create course";
       })
 
-      // ---- updateCourse ----
+      // ================= updateCourse =================
       .addCase(updateCourse.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateCourse.fulfilled, (state, action: PayloadAction<ICourse>) => {
-        state.loading = false;
-        state.allCourses = state.allCourses.map((course) =>
-          course._id === action.payload._id ? action.payload : course
-        );
-      })
+      .addCase(
+        updateCourse.fulfilled,
+        (state, action: PayloadAction<ICourse>) => {
+          state.loading = false;
+          const index = state.allCourses.findIndex(
+            (c) => c._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.allCourses[index] = action.payload;
+          }
+        }
+      )
       .addCase(updateCourse.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to update course";
+        state.error = (action.payload as string) || "Failed to update course";
       })
 
-      // ---- deleteCourse ----
+      // ================= deleteCourse =================
       .addCase(deleteCourse.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteCourse.fulfilled, (state, action: PayloadAction<string>) => {
-        state.loading = false;
-        state.allCourses = state.allCourses.filter((course) => course._id !== action.payload);
-      })
+      .addCase(
+        deleteCourse.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.loading = false;
+          state.allCourses = state.allCourses.filter(
+            (course) => course._id !== action.payload
+          );
+        }
+      )
       .addCase(deleteCourse.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to delete course";
+        state.error = (action.payload as string) || "Failed to delete course";
       });
   },
 });

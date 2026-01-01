@@ -199,11 +199,6 @@ export const signup = createAsyncThunk<
       data.append("image", formData.image);
     }
 
-    // 🔍 See what is being sent
-    console.log("FormData being sent:");
-    for (const pair of data.entries()) {
-      console.log(pair[0], pair[1]);
-    }
 
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/user/signup`,
@@ -214,9 +209,6 @@ export const signup = createAsyncThunk<
         },
       }
     );
-
-    // 🔍 Backend response
-    console.log("Signup API response:", response.data);
 
     toast.success("Signup successful");
 

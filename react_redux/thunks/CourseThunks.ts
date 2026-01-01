@@ -4,7 +4,7 @@ import { RootState } from "../store";
 
 export interface ICourse {
   _id: string;
-  image: string;
+  image: string; // ✅ backend se URL / filename
   title: string;
   description: string;
   category: string;
@@ -13,6 +13,16 @@ export interface ICourse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface CourseFormData {
+  image: File | null; // ✅ sirf form ke liye
+  title: string;
+  description: string;
+  category: string;
+  duration: string;
+  author: string;
+}
+
 
 // ---- getAllCourses ----
 export const getAllCourses = createAsyncThunk<
@@ -55,44 +65,73 @@ export const getCourseById = createAsyncThunk<
 // ---- postCourse ----
 export const postCourse = createAsyncThunk<
   ICourse,
-  Omit<ICourse, "_id" | "createdAt" | "updatedAt">,
-  { state: RootState; rejectValue: string }
->("course/post", async (data, { rejectWithValue }) => {
+  CourseFormData,
+  { rejectValue: string }
+>("course/post", async (form, { rejectWithValue }) => {
   try {
-    const response = await axios.post<{ success: boolean; data: ICourse }>(
+    const data = new FormData();
+
+    data.append("title", form.title);
+    data.append("description", form.description);
+    data.append("category", form.category);
+    data.append("duration", form.duration);
+    data.append("author", form.author);
+
+    if (form.image) {
+      data.append("image", form.image);
+    }
+
+
+    const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course`,
       data,
-      { headers: { "Content-Type": "application/json" } }
+      { headers: { "Content-Type": "multipart/form-data" } }
     );
 
     return response.data.data;
-  } catch (error: any) {
+  } catch (err: any) {
     return rejectWithValue(
-      error.response?.data?.message || "Failed to create course"
+      err.response?.data?.message || "Failed to create course"
     );
   }
 });
+
+
 
 // ---- updateCourse ----
 export const updateCourse = createAsyncThunk<
   ICourse,
-  { id: string; data: Partial<ICourse> },
-  { state: RootState; rejectValue: string }
+  { id: string; data: CourseFormData },
+  { rejectValue: string }
 >("course/update", async ({ id, data }, { rejectWithValue }) => {
   try {
-    const response = await axios.put<{ success: boolean; data: ICourse }>(
+    const formData = new FormData();
+
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("duration", data.duration);
+    formData.append("author", data.author);
+
+    if (data.image) {
+      formData.append("image", data.image);
+    }
+
+    const response = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}/api/studio/course/${id}`,
-      data,
-      { headers: { "Content-Type": "application/json" } }
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
     );
 
     return response.data.data;
-  } catch (error: any) {
+  } catch (err: any) {
     return rejectWithValue(
-      error.response?.data?.message || "Failed to update course"
+      err.response?.data?.message || "Failed to update course"
     );
   }
 });
+
+
 
 // ---- deleteCourse ----
 export const deleteCourse = createAsyncThunk<

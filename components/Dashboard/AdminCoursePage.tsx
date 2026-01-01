@@ -8,6 +8,7 @@ import {
   updateCourse,
   deleteCourse,
   ICourse,
+  CourseFormData
 } from "@/react_redux/thunks/CourseThunks";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,14 +19,16 @@ export default function AdminCoursePage() {
   const { allCourses, loading } = useAppSelector((state) => state.StoreOfCourse);
   
   // ===== Form State =====
-  const [courseForm, setCourseForm] = useState<Omit<ICourse, "_id" | "createdAt" | "updatedAt">>({
-    image: "",
-    title: "",
-    description: "",
-    category: "English Speaking",
-    duration: "",
-    author: "",
-  });
+const [courseForm, setCourseForm] = useState<CourseFormData>({
+  image: null,
+  title: "",
+  description: "",
+  category: "English Speaking",
+  duration: "",
+  author: "",
+});
+
+
   
   const [imagePreview, setImagePreview] = useState<string>("");
   const [editId, setEditId] = useState<string | null>(null);
@@ -42,46 +45,51 @@ export default function AdminCoursePage() {
     setCourseForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-      setCourseForm((prev) => ({ ...prev, image: file.name }));
-    }
-  };
+const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-  const handleSubmit = () => {
-    if (editId) {
-      dispatch(updateCourse({ id: editId, data: courseForm }));
-      setEditId(null);
-    } else {
-      dispatch(postCourse(courseForm));
-    }
-    setCourseForm({
-      image: "",
-      title: "",
-      description: "",
-      category: "English Speaking",
-      duration: "",
-      author: "",
-    });
-    setImagePreview("");
-  };
+  setCourseForm((prev) => ({ ...prev, image: file }));
 
-  const handleEdit = (course: ICourse) => {
-    setEditId(course._id);
-    setCourseForm({
-      image: course.image || "",
-      title: course.title,
-      description: course.description,
-      category: course.category,
-      duration: course.duration,
-      author: course.author,
-    });
-    setImagePreview(course.image || "");
-  };
+  const reader = new FileReader();
+  reader.onloadend = () => setImagePreview(reader.result as string);
+  reader.readAsDataURL(file);
+};
+
+
+const handleSubmit = () => {
+  if (editId) {
+    dispatch(updateCourse({ id: editId, data: courseForm }));
+    setEditId(null);
+  } else {
+    dispatch(postCourse(courseForm));
+  }
+
+  setCourseForm({
+    image: null,
+    title: "",
+    description: "",
+    category: "English Speaking",
+    duration: "",
+    author: "",
+  });
+  setImagePreview("");
+};
+
+
+const handleEdit = (course: ICourse) => {
+  setEditId(course._id);
+  setCourseForm({
+    image: null, // ❌ string ko File me convert nahi karte
+    title: course.title,
+    description: course.description,
+    category: course.category,
+    duration: course.duration,
+    author: course.author,
+  });
+  setImagePreview(course.image); // ✅ preview ke liye
+};
+
 
   const handleDelete = (id: string) => setConfirmDeleteId(id);
   const confirmDelete = () => {
